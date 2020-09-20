@@ -17,7 +17,7 @@ services:
       - 8030:3000
   
   postgres:
-    container_name: ${PROJECT}.api.service.postgres
+    container_name: ${PROJECT}.postgres
     image: postgres:12.4-alpine
     environment: 
       - POSTGRES_USER=${PGSQL_DB_USER}
@@ -25,3 +25,16 @@ services:
       - POSTGRES_DB=${PGSQL_DB_NAME}
     volumes: 
       - pgdata:/var/lib/postgres
+
+  adminer:
+    container_name: ${PROJECT}.adminer
+    image: adminer:latest
+    restart: always
+    depends_on:
+      - postgres
+    environment: 
+      - ADMINER_DEFAULT_DB_DRIVER=pgsql
+      - ADMINER_DEFAULT_DB_HOST=postgres
+      - ADMINER_DEFAULT_DB_NAME=${PGSQL_DB_NAME}
+    ports:
+      - 8080:8080
