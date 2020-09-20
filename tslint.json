@@ -5,13 +5,16 @@
   ],
   "jsRules": {},
   "rules": {
-      "trailing-comma": [ false ],
+      "trailing-comma": [ true ],
       "semicolon": [true, "never"],
       "quotemark": [true, "single"],
       "whitespace": true,
       "space-before-function-paren": true,
       "space-within-parens": true,
-      "import-spacing": [true]
+      "import-spacing": [true],
+      "no-trailing-whitespace": true,
+      "no-irregular-whitespace": true,
+      "no-unused-variable": true
   },
   "rulesDirectory": []
 }
