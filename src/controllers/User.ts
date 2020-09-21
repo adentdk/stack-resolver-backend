@@ -9,6 +9,6 @@ export class Controller {
   public index (req: Request, res: Response): Response {
       return res
       .status(OK)
-      .send({message: 'profile / index'})
+      .send({message: 'user / index'})
   }
 }
