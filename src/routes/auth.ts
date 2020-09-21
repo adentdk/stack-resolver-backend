@@ -6,6 +6,7 @@ export function routes (): Router {
   const controller = new Controller()
 
   api.get('/', controller.index)
+  api.post('/register', controller.register)
 
   return api
 }
