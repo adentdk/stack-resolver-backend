@@ -2,7 +2,6 @@ import Knex from 'knex'
 import path from 'path'
 import config from './config/config'
 
-
 const database = {
   client: 'mysql',
   connection: {
