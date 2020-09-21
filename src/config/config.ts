@@ -18,7 +18,6 @@ switch (process.env.NODE_ENV) {
 
 dotenv.config({path})
 
-
 export default {
   node_env: process.env.NODE_ENV || 'development',
   server: {
@@ -33,10 +32,10 @@ export default {
   },
   db: {
     dialect: process.env.DB || 'mysql',
-    user: process.env.DB_USER || 'user',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'database',
-    host: process.env.DB_HOST || 'host',
+    user: process.env.DB_USER || 'aden',
+    password: process.env.DB_PASSWORD || 'Paketchat12!@',
+    database: process.env.DB_NAME || 'stack_resolve',
+    host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 3306,
   },
   jwt: {
