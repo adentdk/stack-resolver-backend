@@ -4,11 +4,12 @@ import config from './config/config'
 
 
 const database = {
-  client: 'pg',
+  client: 'mysql',
   connection: {
-    database: config.postgres.database,
-    user: config.postgres.user,
-    password: config.postgres.password
+    host: config.db.host,
+    database: config.db.database,
+    user: config.db.user,
+    password: config.db.password
   },
   migrations: {
     directory: path.join(__dirname, 'db', 'migrations')

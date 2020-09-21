@@ -1,6 +1,24 @@
 import fs from 'fs'
 import os from 'os'
 
+import * as dotenv from 'dotenv'
+
+dotenv.config()
+
+const BASE_PATH = `${__dirname}/../../`
+let path: string = BASE_PATH
+switch (process.env.NODE_ENV) {
+  case 'local':
+    path += '.env.local'
+  case 'production':
+    path += '.env.production'
+  default:
+    path += 'env.development'
+}
+
+dotenv.config({path})
+
+
 export default {
   node_env: process.env.NODE_ENV || 'development',
   server: {
@@ -13,29 +31,15 @@ export default {
     dockerHost: os.hostname(),
     version: process.env.npm_package_version || ''
   },
-  postgres: {
-    user: process.env.PGSQL_DB_USER || 'user',
-    password: process.env.PGSQL_DB_PASSWORD || 'password',
-    database: process.env.PGSQL_DB_NAME || 'database',
-    host: process.env.PGSQL_DB_HOST || 'host',
-    port: process.env.PGSQL_DB_PORT || 5432,
+  db: {
+    dialect: process.env.DB || 'mysql',
+    user: process.env.DB_USER || 'user',
+    password: process.env.DB_PASSWORD || 'password',
+    database: process.env.DB_NAME || 'database',
+    host: process.env.DB_HOST || 'host',
+    port: process.env.DB_PORT || 3306,
   },
-  rabbitmq: {
-    hostname: process.env.RABBITMQ_HOST || 'hostname',
-    username: process.env.RABBITMQ_USER || 'username',
-    password: process.env.RABBITMQ_PASS || 'password',
-    port: process.env.RABBITMQ_PORT || 5672,
-    queue: process.env.RABBITMQ_QUEUE || 'queue',
-    exchange: process.env.RABBITMQ_EXCHANGE || 'exchange',
-    maxConnectionRetries: Number(process.env.RABBITMQ_MAX_CONNECTION_RETRIES) || 10,
-    initialRetryConnectionAfter: Number(process.env.RABBITMQ_INITIAL_RETRY_CONNECTION_AFTER) || 1000,
-    waitForNack: Number(process.env.RABBITMQ_WAIT_BEFORE_NACK) || 5000,
-  },
-  elasticsearch: {
-    host: process.env.ELASTIC_HOST || 'host',
-    port: process.env.ELASTIC_PORT || 9200,
-    index: process.env.ELASTIC_EXAMPLE_INDEX || 'index',
-    type: process.env.ELASTIC_EXAMPLE_TYPE || 'type',
-    pingTimeout: Number(process.env.CONNECTION_TIMEOUT) || 5000,
-  },
+  jwt: {
+    secretKey: process.env.JWT_SECRET || 'SOME_JWT_SECRET'
+  }
 }
