@@ -3,7 +3,10 @@ import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
-import { routes } from './routes/index'
+import { routes as rootRoute } from './routes/root'
+import { routes as authRoute } from './routes/auth'
+import { routes as profileRoute } from './routes/profile'
+import { routes as topicRoute } from './routes/topic'
 import { logger } from './utils/logger'
 
 export function start (env: string): express.Application {
@@ -19,7 +22,10 @@ export function start (env: string): express.Application {
   }
   app.use(json())
   app.use(urlencoded({ extended: true }))
-  app.use(routes())
+  app.use('/', rootRoute())
+  app.use('/auth', authRoute())
+  app.use('/profile', profileRoute())
+  app.use('/topic', topicRoute())
 
   return app
 }

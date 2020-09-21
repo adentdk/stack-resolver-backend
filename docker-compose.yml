@@ -7,6 +7,7 @@ services:
   mysql:
     container_name: ${PROJECT}.mysql
     image: mysql:5.7.26
+    restart: always
     environment: 
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
@@ -22,7 +23,7 @@ services:
       - mysql
     environment: 
       - ADMINER_DEFAULT_DB_DRIVER=mysql
-      - ADMINER_DEFAULT_DB_HOST=mysql
+      - ADMINER_DEFAULT_DB_HOST=${PROJECT}.mysql
       - ADMINER_DEFAULT_DB_NAME=${DB_NAME}
     ports:
       - 8080:8080
