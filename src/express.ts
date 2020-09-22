@@ -8,6 +8,7 @@ import { routes as authRoute } from './routes/auth'
 import { routes as userRoute } from './routes/user'
 import { routes as topicRoute } from './routes/topic'
 import { logger } from './utils/logger'
+import { notFound } from './helpers/routeHelper'
 
 export function start (env: string): express.Application {
   logger.debug(`App running as ${env}`)
@@ -26,6 +27,8 @@ export function start (env: string): express.Application {
   app.use('/auth', authRoute())
   app.use('/user', userRoute())
   app.use('/topic', topicRoute())
+
+  app.use(notFound)
 
   return app
 }
