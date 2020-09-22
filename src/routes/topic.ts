@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { Controller } from '../controllers/Topic'
 import ensureAuthenticated from '../middlewares/ensureAuthenticated'
-import { methodNotAllowed, notFound } from '../helpers/routeHelper'
+import { methodNotAllowed } from '../helpers/routeHelper'
 
 export function routes (): Router {
   const api: Router = Router()

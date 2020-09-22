@@ -1,18 +1,31 @@
 import { Router } from 'express'
 import { Controller } from '../controllers/Auth'
+import { methodNotAllowed } from '../helpers/routeHelper'
 import ensureAuthenticated from '../middlewares/ensureAuthenticated'
 
 export function routes (): Router {
   const api: Router = Router()
   const controller = new Controller()
 
-  api.get('/', controller.index)
-  api.post('/register', controller.register)
-  api.post('/login', controller.login)
+  api
+    .route('/')
+    .get(controller.index)
+    .all(methodNotAllowed)
+  api
+    .route('/register')
+    .post(controller.register)
+    .all(methodNotAllowed)
+  api
+    .route('/login')
+    .post(controller.login)
+    .all(methodNotAllowed)
 
   api.use(ensureAuthenticated)
 
-  api.get('/profile', controller.profile)
+  api
+    .route('/profile')
+    .get(controller.profile)
+    .all(methodNotAllowed)
 
   return api
 }
