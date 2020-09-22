@@ -3,6 +3,7 @@ import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import db from './../db/conection'
 import config from '../config/config'
+import { JwtPayload } from '../types'
 
 export interface AuthData {
   id?: number
@@ -38,10 +39,16 @@ export function createAuth (data: AuthData): Promise<AuthData> {
 }
 
 export function encodeToken (userId: number) {
-  const playload = {
+  const playload: JwtPayload = {
     exp: moment().add(14, 'days').unix(),
     iat: moment().unix(),
     sub: userId,
   }
   return jwt.sign(playload, config.jwt.secretKey)
+}
+
+export function decodeToken (token: string): JwtPayload {
+  const payload = jwt.verify(token, config.jwt.secretKey) as JwtPayload
+
+  return payload
 }
