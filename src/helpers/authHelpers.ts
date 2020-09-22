@@ -1,7 +1,6 @@
 import bcript from 'bcrypt'
 import moment from 'moment'
 import jwt from 'jsonwebtoken'
-import db from './../db/conection'
 import config from '../config/config'
 import { JwtPayload } from '../types'
 
@@ -18,24 +17,11 @@ export function comparePassword (password: string, hash: string): boolean {
   return bcript.compareSync(password, hash)
 }
 
-export function getAuthByEmail (email: string) {
-  return db<AuthData>('auths').where({email}).first()
-}
-
-export function createAuth (data: AuthData): Promise<AuthData> {
+export function hashPassword (password: string): string {
   const salt = bcript.genSaltSync()
-  const hash = bcript.hashSync(data.password, salt)
-  return new Promise<AuthData>((resolve, reject) => {
-    db<AuthData>('auths').insert({
-      email: data.email,
-      password: hash,
-      user_id: data.user_id
-    }).returning('*').then(result => {
-      resolve(result[0])
-    }).catch(error => {
-      reject(error)
-    })
-  })
+  const hash = bcript.hashSync(password, salt)
+
+  return hash
 }
 
 export function encodeToken (userId: number) {
