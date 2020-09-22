@@ -9,6 +9,7 @@ export interface AuthData {
   email: string
   password: string
   user_id: number
+  is_online?: boolean
   created_at?: string
 }
 

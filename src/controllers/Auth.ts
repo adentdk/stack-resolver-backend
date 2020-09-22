@@ -90,6 +90,8 @@ export class Controller {
         }
       }
 
+      await getAuthByEmail(email).update({ is_online: true })
+
       const token = encodeToken(auth.user_id)
       return res
       .status(OK)
