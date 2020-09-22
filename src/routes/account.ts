@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Controller } from '../controllers/Auth'
+import { Controller } from '../controllers/Account'
 import { methodNotAllowed } from '../helpers/routeHelper'
 import ensureAuthenticated from '../middlewares/ensureAuthenticated'
 
