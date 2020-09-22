@@ -17,7 +17,8 @@ module.exports = {
       },
       viewed: {
         type: Sequelize.DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 0
       },
       created_by: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
