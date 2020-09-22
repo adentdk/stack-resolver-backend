@@ -1,5 +1,15 @@
 import { Response, Request } from 'express'
-import { OK } from 'http-status-codes'
+import { BAD_REQUEST, OK } from 'http-status-codes'
+import { doCreateTopic, doGetTopicList } from '../models/Topic'
+import { RequestWithAuth } from '../types'
+
+export type TopicListRequestQuery = {
+  page: string,
+  pageSize: string,
+  userId: string,
+  searchTitle: string,
+  tags: string
+}
 
 export class Controller {
   public constructor () {
@@ -12,14 +22,30 @@ export class Controller {
       .send({message: 'topic / index'})
   }
 
-  public list (req: Request, res: Response): Response {
-    return res.status(OK).send({message: 'topic / list'})
+  public async list (req: RequestWithAuth, res: Response): Promise<Response> {
+    const query = req.query as TopicListRequestQuery
+    const tags = query.tags.split(',')
+
+    try {
+      const topics = await doGetTopicList({...query, tags})
+      return res.status(OK).send({data: topics})
+    } catch (error) {
+      return res.status(BAD_REQUEST).send({message: error.message})
+    }
   }
 
-  public create (req: Request, res: Response): Response {
-    return res
-    .status(OK)
-    .send({message: 'topic / create'})
+  public async create (req: RequestWithAuth, res: Response): Promise<Response> {
+    try {
+      const createdBy = req.user_id
+      const topic = await doCreateTopic({...req.body, created_by: createdBy})
+      return res
+      .status(OK)
+      .send({message: 'topic has been created', data: topic})
+    } catch (error) {
+      return res
+      .status(BAD_REQUEST)
+      .send({message: error.message})
+    }
   }
 
   public detail (req: Request, res: Response): Response {
