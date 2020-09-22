@@ -1,7 +1,8 @@
 import { Response, Request } from 'express'
 import { BAD_REQUEST, OK } from 'http-status-codes'
 import { comparePassword, createAuth, encodeToken, getAuthByEmail } from '../helpers/authHelpers'
-import { createUser } from '../helpers/userHelpers'
+import { createUser, getUserById } from '../helpers/userHelpers'
+import { RequestWithAuth } from '../types'
 import { logger } from '../utils/logger'
 
 type RegisterResponseBody = {
@@ -102,6 +103,19 @@ export class Controller {
       return res
       .status(OK)
       .send({ message: error.message })
+    }
+  }
+
+  public async profile (req: RequestWithAuth, res: Response): Promise<Response> {
+    try {
+      const user = await getUserById(req.user_id || 0)
+      return res.status(OK).send({
+        data: user
+      })
+    } catch (error) {
+      return res.status(BAD_REQUEST).send({
+        message: error.message
+      })
     }
   }
 }
