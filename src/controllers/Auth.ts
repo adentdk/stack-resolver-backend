@@ -1,13 +1,35 @@
 import { Response, Request } from 'express'
-import { OK } from 'http-status-codes'
-import { createAuth, getAuthByEmail } from '../helpers/authHelpers'
+import { BAD_REQUEST, OK } from 'http-status-codes'
+import { comparePassword, createAuth, encodeToken, getAuthByEmail } from '../helpers/authHelpers'
 import { createUser } from '../helpers/userHelpers'
+import { logger } from '../utils/logger'
+
+type RegisterResponseBody = {
+  message?: string,
+  data?: any
+}
 
 type RegisterRequest = Request<
   {},
-  { message: string },
+  RegisterResponseBody,
   {
     name: string
+    email: string
+    password: string
+  }
+>
+
+type LoginResponseBody = {
+  message?: string
+  data?: {
+    token: string
+  }
+}
+
+type LoginRequest = Request<
+  {},
+  LoginResponseBody,
+  {
     email: string
     password: string
   }
@@ -30,19 +52,54 @@ export class Controller {
     try {
       const oldAuth = await getAuthByEmail(email)
       if (oldAuth) {
-        throw {data: oldAuth, message: 'account already exist'}
+        throw {message: 'account already exist'}
       }
 
       const newUser = await createUser({display_name: name, full_name: name}) as number
       const newAuth = await createAuth({email, password, user_id: newUser})
 
+      logger.info(`The new user is registered with id ${newAuth}`)
+
       return res
       .status(OK)
-      .send({message: 'auth / register', data: newAuth})
+      .send({message: 'user registration was successful'})
+    } catch (error) {
+      return res
+      .status(BAD_REQUEST)
+      .send({error})
+    }
+  }
+
+  public async login (req: LoginRequest, res: Response<LoginResponseBody>): Promise<Response> {
+    const {email, password} = req.body
+    try {
+
+      const auth = await getAuthByEmail(email)
+
+      if (auth === undefined) {
+        throw {
+          message: 'account not found'
+        }
+      }
+
+      const isPasswordMatch = comparePassword(password, auth.password)
+
+      if (!isPasswordMatch) {
+        throw {
+          message: 'password did\'nt match'
+        }
+      }
+
+      const token = encodeToken(auth.user_id)
+      return res
+      .status(OK)
+      .send({
+        data: { token }
+      })
     } catch (error) {
       return res
       .status(OK)
-      .send({error})
+      .send({ message: error.message })
     }
   }
 }

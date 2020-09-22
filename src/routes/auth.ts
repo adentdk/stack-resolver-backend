@@ -7,6 +7,7 @@ export function routes (): Router {
 
   api.get('/', controller.index)
   api.post('/register', controller.register)
+  api.post('/login', controller.login)
 
   return api
 }

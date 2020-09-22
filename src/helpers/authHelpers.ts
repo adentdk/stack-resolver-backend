@@ -1,5 +1,8 @@
 import bcript from 'bcrypt'
+import moment from 'moment'
+import jwt from 'jsonwebtoken'
 import db from './../db/conection'
+import config from '../config/config'
 
 export interface AuthData {
   id?: number
@@ -9,8 +12,12 @@ export interface AuthData {
   created_at?: string
 }
 
+export function comparePassword (password: string, hash: string): boolean {
+  return bcript.compareSync(password, hash)
+}
+
 export function getAuthByEmail (email: string) {
-  return db<AuthData>('auths').where({email}).select(['id', 'email']).first()
+  return db<AuthData>('auths').where({email}).first()
 }
 
 export function createAuth (data: AuthData): Promise<AuthData> {
@@ -27,4 +34,13 @@ export function createAuth (data: AuthData): Promise<AuthData> {
       reject(error)
     })
   })
+}
+
+export function encodeToken (userId: number) {
+  const playload = {
+    exp: moment().add(14, 'days').unix(),
+    iat: moment().unix(),
+    sub: userId,
+  }
+  return jwt.sign(playload, config.jwt.secretKey)
 }
