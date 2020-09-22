@@ -4,7 +4,7 @@ import cors from 'cors'
 import express from 'express'
 import helmet from 'helmet'
 import { routes as rootRoute } from './routes/root'
-import { routes as authRoute } from './routes/auth'
+import { routes as accountRoute } from './routes/account'
 import { routes as userRoute } from './routes/user'
 import { routes as topicRoute } from './routes/topic'
 import { logger } from './utils/logger'
@@ -24,7 +24,7 @@ export function start (env: string): express.Application {
   app.use(json())
   app.use(urlencoded({ extended: true }))
   app.use('/', rootRoute())
-  app.use('/auth', authRoute())
+  app.use('/account', accountRoute())
   app.use('/user', userRoute())
   app.use('/topic', topicRoute())
 
