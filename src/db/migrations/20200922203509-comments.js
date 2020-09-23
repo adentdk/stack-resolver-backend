@@ -19,25 +19,25 @@ module.exports = {
       topic_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        onDelete: 'cascade',
         references: {
           model: 'topics',
-          onDelete: 'cascade'
         }
       },
       parent_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
+        onDelete: 'cascade',
         references: {
           model: 'comments',
-          onDelete: 'cascade'
         }
       },
       created_by: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        onDelete: 'cascade',
         references: {
           model: 'users',
-          onDelete: 'cascade'
         }
       },
       created_at: {

@@ -33,9 +33,9 @@ module.exports = {
       created_by: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        onDelete: 'cascade',
         references: {
           model: 'users',
-          onDelete: 'cascade'
         }
       },
       created_at: {

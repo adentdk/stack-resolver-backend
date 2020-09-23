@@ -10,17 +10,17 @@ module.exports = {
       comment_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        onDelete: 'cascade',
         references: {
           model: 'comments',
-          onDelete: 'cascade'
         }
       },
       user_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+        onDelete: 'cascade',
         references: {
           model: 'users',
-          onDelete: 'cascade'
         }
       },
       created_at: {

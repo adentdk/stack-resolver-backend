@@ -22,9 +22,9 @@ module.exports = {
       },
       user_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
+        onDelete: 'cascade',
         references: {
           model: 'users',
-          onDelete: 'cascade'
         }
       },
       created_at: {
