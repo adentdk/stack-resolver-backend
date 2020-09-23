@@ -24,7 +24,7 @@ export function routes (): Router {
     .delete(controller.delete)
     .all(methodNotAllowed)
   api
-    .route('/topics/:id/comments')
+    .route('/topics/:topicId/comments')
     .get(controller.commentList)
     .post(controller.commentCreate)
     .put(controller.commentEdit)

@@ -1,4 +1,4 @@
-import {Model, Optional, Association, DataTypes, FindOptions, json, Op} from 'sequelize'
+import {Model, Optional, Association, DataTypes, FindOptions, Op, HasManyHasAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyGetAssociationsMixinOptions} from 'sequelize'
 import { getOffset, Pagination } from '../helpers/paginateHelper'
 import db from '../models'
 import Comment from './Comment'
@@ -14,6 +14,8 @@ interface TopicAttributes {
 
 type TopicCreationAttributes = Optional<TopicAttributes, 'id'>
 
+type CommentCreation = {content: string, createdBy: number, type?: 'init' | 'replies'}
+
 class Topic extends Model<TopicAttributes, TopicCreationAttributes> implements TopicAttributes {
   public id!: number
   public title!: string
@@ -27,9 +29,14 @@ class Topic extends Model<TopicAttributes, TopicCreationAttributes> implements T
   public readonly comments!: Comment
   public readonly user!: User
 
+  public getComments!: HasManyGetAssociationsMixin<Comment>
+  public hasComment!: HasManyHasAssociationMixin<Comment, number>
+  public countComments!: HasManyCountAssociationsMixin
+  public createComment!: HasManyCreateAssociationMixin<Comment>
+
   public static associations: {
-    comments: Association<Topic, Comment>,
     user: Association<Topic, User>,
+    comments: Association<Topic, Comment>,
   }
 }
 
@@ -132,10 +139,12 @@ export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pa
   })
 }
 
-export const doCreateTopic = (data: TopicCreationAttributes) => {
+export const doCreateTopic = (data: TopicCreationAttributes, content: string) => {
   return new Promise(async (resolve, reject) => {
     try {
       const topic = await Topic.create(data)
+
+      await topic.createComment({ content, created_by: data.created_by, type: 'init' })
 
       resolve(topic)
     } catch (error) {
@@ -150,13 +159,15 @@ export const doGetTopicWithComments = (topicId: number, filter: any): Promise<To
       attributes: {
         exclude: ['updatedAt', 'created_by'],
         include: [
-          [db.Sequelize.col('user.display_name'), 'createdBy']
+          [db.Sequelize.col('user.display_name'), 'createdBy'],
+          [db.Sequelize.literal('COUNT(comments.id)'), 'commentCount']
         ]
       },
       include: [
         {
           association: Topic.associations.comments,
-          as: 'comments'
+          as: 'comments',
+          attributes: []
         },
         {
           association: Topic.associations.user,
@@ -169,8 +180,60 @@ export const doGetTopicWithComments = (topicId: number, filter: any): Promise<To
       const topic = await Topic.findByPk(topicId, options)
 
       if (!topic) throw new Error('Topic not found')
-
       resolve(topic)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const doGetCommentsByTopicId = (topicId: number, filter: any): Promise<Comment[]> => {
+  return new Promise(async (resolve, reject) => {
+    const options = {
+      attributes: ['id']
+    } as unknown as FindOptions
+    try {
+      const topic = await Topic.findByPk(topicId, options)
+
+      if (!topic) throw new Error('Topic not found')
+
+      const commentsOption = {
+        attributes: {
+          exclude: ['TopicId', 'topic_id', 'created_by'],
+          include: [
+            [db.Sequelize.col('user.display_name'), 'createdBy'],
+          ]
+        },
+        include: [
+          {
+            association: Comment.associations.user,
+            as: 'user',
+            attributes: []
+          }
+        ]
+      } as unknown as HasManyGetAssociationsMixinOptions
+
+      const comments = await topic.getComments(commentsOption)
+      resolve(comments)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const doCreateCommentByTopic = (topicId: number, data: CommentCreation): Promise<Comment> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const topic = await Topic.findByPk(topicId)
+
+      if (!topic) throw new Error('Topic not found')
+
+      const comment = await topic.createComment({
+        content: data.content,
+        created_by: data.createdBy
+      })
+
+      resolve(comment)
     } catch (error) {
       reject(error)
     }

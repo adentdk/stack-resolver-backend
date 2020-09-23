@@ -11,6 +11,11 @@ module.exports = {
         type: Sequelize.DataTypes.TEXT,
         allowNull: false
       },
+      type: {
+        type: Sequelize.DataTypes.ENUM('init', 'replies'),
+        allowNull: false,
+        defaultValue: 'replies'
+      },
       topic_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
@@ -21,7 +26,7 @@ module.exports = {
       },
       parent_id: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: 'comments',
           onDelete: 'cascade'

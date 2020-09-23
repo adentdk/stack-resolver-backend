@@ -1,6 +1,7 @@
 import {Model, Optional, Association, DataTypes, FindOptions} from 'sequelize'
 import db from '../models'
 import CommentVote from './CommentVote'
+import User from './User'
 
 interface CommentAttributes {
   id: number
@@ -23,9 +24,11 @@ class Comment extends Model<CommentAttributes, CommentCreationAttributes> implem
   public readonly updated_at!: Date
 
   public readonly CommentVotes!: CommentVote
+  public readonly user!: User
 
   public static associations: {
     commentVotes: Association<Comment, CommentVote>,
+    user: Association<Comment, User>,
   }
 }
 
@@ -41,9 +44,10 @@ Comment.init(
     },
     parent_id: {
       type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true
     },
     topic_id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER.UNSIGNED
     },
     created_by: {
       type: DataTypes.INTEGER.UNSIGNED
@@ -56,5 +60,10 @@ Comment.init(
     sequelize: db.sequelize
   }
 )
+
+Comment.belongsTo(User, {
+  as: 'user',
+  foreignKey: 'created_by'
+})
 
 export default Comment
