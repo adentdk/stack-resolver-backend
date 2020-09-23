@@ -40,7 +40,7 @@ export class Controller {
       const topic = await doCreateTopic({...req.body, created_by: createdBy})
       return res
       .status(OK)
-      .send({message: 'topic has been created', data: topic})
+      .send({message: 'topic has been created'})
     } catch (error) {
       return res
       .status(BAD_REQUEST)

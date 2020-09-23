@@ -1,5 +1,5 @@
 import {Model, Optional, Association, DataTypes, FindOptions} from 'sequelize'
-import { getOffset } from '../helpers/paginateHelper'
+import { getOffset, Pagination } from '../helpers/paginateHelper'
 import db from '../models'
 import Comment from './Comment'
 
@@ -72,7 +72,7 @@ interface TopicListFilter {
   tags: string[]
 }
 
-export const doGetTopicList = (filter: TopicListFilter) => {
+export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pagination, data: Topic[]}>=> {
   return new Promise(async (resolve, reject) => {
 
     const page = parseInt(filter.page, 0) || 1
@@ -86,9 +86,16 @@ export const doGetTopicList = (filter: TopicListFilter) => {
     }
 
     try {
-      const topics = await Topic.findAll(options)
+      const [count, row] = await Promise.all([Topic.count(options), Topic.findAll(options)])
 
-      resolve(topics)
+      resolve({
+        pagination: {
+          page, pageSize,
+          totalPage: Math.ceil(count / pageSize),
+          totalItem: count
+        },
+        data: row
+      })
     } catch (error) {
       reject(error)
     }
