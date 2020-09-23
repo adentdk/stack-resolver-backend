@@ -171,7 +171,7 @@ export const doGetTopicWithComments = (topicId: number, filter: any): Promise<To
   return new Promise(async (resolve, reject) => {
     const options = {
       attributes: {
-        exclude: ['updatedAt', 'created_by'],
+        exclude: ['updatedAt'],
         include: [
           [db.Sequelize.col('user.display_name'), 'createdBy'],
           [db.Sequelize.literal('COUNT(comments.id)'), 'commentCount']
@@ -213,7 +213,7 @@ export const doGetCommentsByTopicId = (topicId: number, filter: any): Promise<Co
 
       const commentsOption = {
         attributes: {
-          exclude: ['TopicId', 'topic_id', 'created_by'],
+          exclude: ['TopicId'],
           include: [
             [db.Sequelize.col('user.display_name'), 'createdBy'],
           ]
@@ -229,6 +229,20 @@ export const doGetCommentsByTopicId = (topicId: number, filter: any): Promise<Co
 
       const comments = await topic.getComments(commentsOption)
       resolve(comments)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const doGetCommentById = (commentId: number): Promise<Comment> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const comment = await Comment.findByPk(commentId)
+
+      if (!comment) throw new Error('Not Found')
+
+      resolve(comment)
     } catch (error) {
       reject(error)
     }
