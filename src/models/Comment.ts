@@ -1,4 +1,4 @@
-import {Model, Optional, Association, DataTypes, FindOptions} from 'sequelize'
+import {Model, Optional, Association, DataTypes} from 'sequelize'
 import db from '../models'
 import CommentVote from './CommentVote'
 import User from './User'

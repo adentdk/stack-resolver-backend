@@ -1,4 +1,4 @@
-import {Model, Optional, Association, DataTypes, FindOptions} from 'sequelize'
+import {Model, Optional, DataTypes} from 'sequelize'
 import db from '../models'
 
 interface CommentVoteAttributes {

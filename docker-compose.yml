@@ -40,4 +40,4 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 42001:3000
+      - 3000:3000

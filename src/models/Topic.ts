@@ -1,4 +1,4 @@
-import {Model, Optional, Association, DataTypes, FindOptions, Op, HasManyHasAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyGetAssociationsMixinOptions} from 'sequelize'
+import {Model, Optional, Association, DataTypes, FindOptions, HasManyHasAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyGetAssociationsMixinOptions} from 'sequelize'
 import { getOffset, Pagination } from '../helpers/paginateHelper'
 import db from '../models'
 import Comment from './Comment'
