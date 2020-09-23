@@ -9,6 +9,8 @@ interface TopicAttributes {
   title: string
   tags: string
   viewed: number
+  is_edited: boolean
+  is_deleted: boolean
   created_by: number
 }
 
@@ -21,6 +23,8 @@ class Topic extends Model<TopicAttributes, TopicCreationAttributes> implements T
   public title!: string
   public tags!: string
   public viewed!: number
+  public is_edited!: boolean
+  public is_deleted!: boolean
   public created_by!: number
 
   public readonly created_at!: Date
@@ -65,6 +69,16 @@ Topic.init(
     viewed: {
       type: DataTypes.STRING(128),
       allowNull: true
+    },
+    is_deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    is_edited: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     created_by: {
       type: DataTypes.INTEGER.UNSIGNED,

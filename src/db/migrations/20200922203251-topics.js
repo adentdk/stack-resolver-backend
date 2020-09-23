@@ -20,6 +20,16 @@ module.exports = {
         allowNull: false,
         defaultValue: 0
       },
+      is_deleted: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      is_edited: {
+        type: Sequelize.DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       created_by: {
         type: Sequelize.DataTypes.INTEGER.UNSIGNED,
         allowNull: false,

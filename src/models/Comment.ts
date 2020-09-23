@@ -6,6 +6,7 @@ import User from './User'
 interface CommentAttributes {
   id: number
   content: string
+  type: 'init' | 'replies'
   topic_id: number
   parent_id: number
   created_by: number
@@ -16,6 +17,7 @@ type CommentCreationAttributes = Optional<CommentAttributes, 'id'>
 class Comment extends Model<CommentAttributes, CommentCreationAttributes> implements CommentAttributes {
   public id!: number
   public content!: string
+  public type!: 'init' | 'replies'
   public topic_id!: number
   public parent_id!: number
   public created_by!: number
@@ -41,6 +43,11 @@ Comment.init(
     },
     content: {
       type: DataTypes.TEXT
+    },
+    type: {
+      type: DataTypes.ENUM('init', 'replies'),
+      allowNull: false,
+      defaultValue: 'replies'
     },
     parent_id: {
       type: DataTypes.INTEGER.UNSIGNED,
