@@ -15,9 +15,9 @@
   },
   "production": {
     "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
+    "password": "Admin123!@#",
+    "database": "stack_resolve",
+    "host": "http://ec2-18-219-81-63.us-east-2.compute.amazonaws.com:3306",
     "dialect": "mysql"
   }
 }
