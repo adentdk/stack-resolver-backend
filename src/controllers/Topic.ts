@@ -1,6 +1,6 @@
 import { Response, Request } from 'express'
 import { BAD_REQUEST, OK } from 'http-status-codes'
-import { doCreateTopic, doGetTopicList } from '../models/Topic'
+import { doCreateTopic, doGetTopicList, doGetTopicWithComments } from '../models/Topic'
 import { RequestWithAuth } from '../types'
 
 export type TopicListRequestQuery = {
@@ -49,10 +49,16 @@ export class Controller {
     }
   }
 
-  public detail (req: Request, res: Response): Response {
-    return res
-    .status(OK)
-    .send({message: 'topic / detail'})
+  public async detail (req: Request, res: Response): Promise<Response> {
+    try {
+      const topicId = req.params.id as unknown as number
+      const topicWithComments = await doGetTopicWithComments(topicId, {})
+      return res
+      .status(OK)
+      .send({data: topicWithComments})
+    } catch (error) {
+      return res.status(BAD_REQUEST).send({message: error.message})
+    }
   }
 
   public delete (req: Request, res: Response): Response {

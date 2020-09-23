@@ -1,7 +1,8 @@
-import {Model, Optional, Association, DataTypes, FindOptions, json} from 'sequelize'
+import {Model, Optional, Association, DataTypes, FindOptions, json, Op} from 'sequelize'
 import { getOffset, Pagination } from '../helpers/paginateHelper'
 import db from '../models'
 import Comment from './Comment'
+import User from './User'
 
 interface TopicAttributes {
   id: number
@@ -24,9 +25,11 @@ class Topic extends Model<TopicAttributes, TopicCreationAttributes> implements T
   public readonly updated_at!: Date
 
   public readonly comments!: Comment
+  public readonly user!: User
 
   public static associations: {
     comments: Association<Topic, Comment>,
+    user: Association<Topic, User>,
   }
 }
 
@@ -68,7 +71,14 @@ Topic.init(
     sequelize: db.sequelize
   }
 )
-
+Topic.hasMany(Comment, {
+  as: 'comments'
+})
+Topic.belongsTo(User, {
+  as: 'user',
+  foreignKey: 'created_by',
+  targetKey: 'id'
+})
 export default Topic
 
 interface TopicListFilter {
@@ -87,10 +97,23 @@ export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pa
 
     const offset = getOffset(page, pageSize)
 
-    const options: FindOptions = {
+    const options = {
       offset,
-      limit: pageSize
-    }
+      limit: pageSize,
+      attributes: {
+        exclude: ['updatedAt', 'created_by'],
+        include: [
+          [db.Sequelize.col('user.display_name'), 'createdBy']
+        ]
+      },
+      include: [
+        {
+          association: Topic.associations.user,
+          as: 'user',
+          attributes: []
+        }
+      ]
+    } as unknown as FindOptions
 
     try {
       const [count, rows] = await Promise.all([Topic.count(options), Topic.findAll(options)])
@@ -113,6 +136,39 @@ export const doCreateTopic = (data: TopicCreationAttributes) => {
   return new Promise(async (resolve, reject) => {
     try {
       const topic = await Topic.create(data)
+
+      resolve(topic)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+export const doGetTopicWithComments = (topicId: number, filter: any): Promise<Topic> => {
+  return new Promise(async (resolve, reject) => {
+    const options = {
+      attributes: {
+        exclude: ['updatedAt', 'created_by'],
+        include: [
+          [db.Sequelize.col('user.display_name'), 'createdBy']
+        ]
+      },
+      include: [
+        {
+          association: Topic.associations.comments,
+          as: 'comments'
+        },
+        {
+          association: Topic.associations.user,
+          as: 'user',
+          attributes: []
+        }
+      ]
+    } as unknown as FindOptions
+    try {
+      const topic = await Topic.findByPk(topicId, options)
+
+      if (!topic) throw new Error('Topic not found')
 
       resolve(topic)
     } catch (error) {
