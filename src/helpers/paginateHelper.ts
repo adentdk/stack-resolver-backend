@@ -1,8 +1,8 @@
 export interface Pagination {
   page: number
   pageSize: number
-  totalPage: number
-  totalItem: number
+  numberOfPages: number
+  numberOfRows: number
 }
 
 export function getOffset (page: number, perPage: number) {

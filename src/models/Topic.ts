@@ -1,4 +1,4 @@
-import {Model, Optional, Association, DataTypes, FindOptions} from 'sequelize'
+import {Model, Optional, Association, DataTypes, FindOptions, json} from 'sequelize'
 import { getOffset, Pagination } from '../helpers/paginateHelper'
 import db from '../models'
 import Comment from './Comment'
@@ -43,7 +43,14 @@ Topic.init(
     },
     tags: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: false,
+      get () {
+        const rawValue = this.getDataValue('tags')
+        return rawValue ? JSON.parse(rawValue) : null
+      },
+      set (value) {
+        this.setDataValue('tags', JSON.stringify(value))
+      }
     },
     viewed: {
       type: DataTypes.STRING(128),
@@ -72,7 +79,7 @@ interface TopicListFilter {
   tags: string[]
 }
 
-export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pagination, data: Topic[]}>=> {
+export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pagination, rows: Topic[]}>=> {
   return new Promise(async (resolve, reject) => {
 
     const page = parseInt(filter.page, 0) || 1
@@ -86,15 +93,15 @@ export const doGetTopicList = (filter: TopicListFilter): Promise<{pagination: Pa
     }
 
     try {
-      const [count, row] = await Promise.all([Topic.count(options), Topic.findAll(options)])
+      const [count, rows] = await Promise.all([Topic.count(options), Topic.findAll(options)])
 
       resolve({
         pagination: {
           page, pageSize,
-          totalPage: Math.ceil(count / pageSize),
-          totalItem: count
+          numberOfPages: Math.ceil(count / pageSize),
+          numberOfRows: count
         },
-        data: row
+        rows
       })
     } catch (error) {
       reject(error)

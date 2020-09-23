@@ -37,7 +37,8 @@ export class Controller {
   public async create (req: RequestWithAuth, res: Response): Promise<Response> {
     try {
       const createdBy = req.user_id
-      const topic = await doCreateTopic({...req.body, created_by: createdBy})
+      const tags = req.body.tags.split(',')
+      await doCreateTopic({...req.body, tags, created_by: createdBy})
       return res
       .status(OK)
       .send({message: 'topic has been created'})
